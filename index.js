@@ -16,8 +16,8 @@ if ( typeof loggly === 'object'
                            alert(loggly.util.datestring_to_z(context.from))
                       var value     = args[0]
                         , type      = args[1]
-                        , currFrom  = new Date(_LU.datestring_to_z(context.from))
-                        , currUntil = new Date(_LU.datestring_to_z(context.until))
+                        , currFrom  = logglyTimeToDate(context.from)
+                        , currUntil = logglyTimeToDate(context.until)
 
                       if (value) {
                         loggly
@@ -36,6 +36,24 @@ if ( typeof loggly === 'object'
 
     }}
   })
+  
+  function logglyTimeToDate(time) {
+    if (_LU.is_valid_relative_time(time)) {
+      time = time.replace(/now/i, ISODateString(new Date()))
+    }
+
+    if (_LU.is_valid_zrel_time(time)) {
+      time = _LU.zrel_to_datestring(time)
+    }
+
+    time = time.replace('T', ' ')
+
+    if (_LU._is_valid_time(time, _LU.re_iso8601z)) {
+      return new Date(time)
+    } else {
+      return loggly.error("Invalid from/until time")
+    }
+  }
 }
 
 var re_time      = /^([01]?[0-9]|2[0-3]):?([0-5][0-9])? ?(AM|PM)?$/i
