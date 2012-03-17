@@ -47,12 +47,8 @@ if ( typeof loggly === 'object'
 
     time = time.replace('T', ' ')
 
-    if (_LU._is_valid_time(time, _LU.re_iso8601z)) {
-      alert(time)
-      return new Date(time)
-    } else {
-      alert('bad:'  + time)
-    }
+    // need a better way to bubble up the error, loggy.error('bad')?
+    return new Date(time)
   }
 }
 
