@@ -49,8 +49,6 @@ if ( typeof loggly === 'object'
 
     if (_LU._is_valid_time(time, _LU.re_iso8601z)) {
       return new Date(time)
-    } else {
-      return loggly.error("Invalid from/until time")
     }
   }
 }
@@ -70,8 +68,6 @@ function calculate(value, type , currFrom, currUntil) {
       }
       return ISODateString(date)
     } else if (re_time.test(value)) {
-      console.log(value)
-      console.log('how?')
       return timeOnly(value
                     , type === 'from' ? currFrom
                                       : currUntil)
