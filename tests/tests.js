@@ -2,63 +2,50 @@ var cmds  = require('../')
 
 var test  = require('tap').test
 
+// parse args
 test('test parseArgs basic', function(t) {
   ret = cmds.parseArgs(['01/01/12', '>', '01/05/12'])
 
-  t.ok(ret)
-  t.ok(ret.from)
-  t.ok(ret.until)
-
-  t.equal('01/01/12', ret.from)
-  t.equal('01/05/12', ret.until)
+  t.deepEqual([['01/01/12', 'from']
+              , ['01/05/12', 'until']]
+            , ret)
   t.end()
 })
 
 test('test parseArgs basic reverse', function(t) {
   ret = cmds.parseArgs(['01/05/12', '<', '01/01/12'])
 
-  t.ok(ret)
-  t.ok(ret.from)
-  t.ok(ret.until)
-
-  t.equal('01/01/12', ret.from)
-  t.equal('01/05/12', ret.until)
+  t.deepEqual([['01/05/12', 'until']
+              , ['01/01/12', 'from']]
+            , ret)
   t.end()
 })
 
 test('test parseArgs only from', function(t) {
   ret = cmds.parseArgs(['01/01/12'])
 
-  t.ok(ret)
-  t.ok(ret.from)
-  t.ok(!ret.until)
-
-  t.equal('01/01/12', ret.from)
+  t.deepEqual([['01/01/12', 'from']]
+            , ret)
   t.end()
 })
 
 test('test parseArgs only until', function(t) {
   ret = cmds.parseArgs(['01/05/12', '<'])
 
-  t.ok(ret)
-  t.ok(!ret.from)
-  t.ok(ret.until)
-
-  t.equal('01/05/12', ret.until)
+  t.deepEqual([['01/05/12', 'until']]
+            , ret)
   t.end()
 })
 
 test('test parseArgs only from with >', function(t) {
   ret = cmds.parseArgs(['01/01/12', '>'])
 
-  t.ok(ret)
-  t.ok(ret.from)
-  t.ok(!ret.until)
-
-  t.equal('01/01/12', ret.from)
+  t.deepEqual([['01/01/12', 'from']]
+            , ret)
   t.end()
 })
 
+// addToDate
 test('test addToDate second', function(t) {
   var date = new Date('2012-01-01 9:00:00Z')
 
@@ -120,31 +107,147 @@ test('test addToDate year', function(t) {
   t.end()
 })
 
-/*
+// timeOnly
 test('test timeOnly', function(t) {
+  ret = cmds.timeOnly('4:30'
+                    , new Date('2012-01-01 9:00:00Z'))
 
-  ret = cmds.timeOnly(date, 1, 'year')
-
-  t.equal(new Date('2013-01-01 9:00:00Z').valueOf()
-        , ret.valueOf())
+  t.equal('2012-01-01T12:30:00Z'
+        , ret)
   t.end()
 })
-*/
 
+test('test timeOnly with PM', function(t) {
+  ret = cmds.timeOnly('4:30 pm'
+                    , new Date('2012-01-01 9:00:00Z'))
+
+  t.equal('2012-01-02T00:30:00Z'
+        , ret)
+  t.end()
+})
+
+test('test timeOnly with 24Hour', function(t) {
+  ret = cmds.timeOnly('14:30'
+                    , new Date('2012-01-01 9:00:00Z'))
+
+  t.equal('2012-01-01T22:30:00Z'
+        , ret)
+  t.end()
+})
+
+test('test timeOnly with irational PM', function(t) {
+  ret = cmds.timeOnly('14:30 pm'
+                    , new Date('2012-01-01 9:00:00Z'))
+
+  t.equal('2012-01-01T22:30:00Z'
+        , ret)
+  t.end()
+})
+
+test('test timeOnly with only hour', function(t) {
+  ret = cmds.timeOnly('2'
+                    , new Date('2012-01-01 9:30:00Z'))
+
+  t.equal('2012-01-01T10:00:00Z'
+        , ret)
+  t.end()
+})
+
+test('test timeOnly with hour and PM', function(t) {
+  ret = cmds.timeOnly('2pm'
+                    , new Date('2012-01-01 9:30:00Z'))
+
+  t.equal('2012-01-01T22:00:00Z'
+        , ret)
+  t.end()
+})
+
+// relativeOnly
+
+test('test relativeOnly FROM+20MINUTES', function(t) {
+  ret = cmds.relativeOnly('FROM+20MINUTES'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-01-01T09:50:00Z'
+        , ret)
+  t.end()
+})
+
+test('test relativeOnly UNTIL-20MINUTES', function(t) {
+  ret = cmds.relativeOnly('UNTIL-20MINUTES'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-01-01T10:10:00Z'
+        , ret)
+  t.end()
+})
+
+test('test relativeOnly -20MINUTES', function(t) {
+  ret = cmds.relativeOnly('-20MINUTES'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-01-01T10:10:00Z'
+        , ret)
+  t.end()
+})
+
+test('test relativeOnly +20MINUTES', function(t) {
+  ret = cmds.relativeOnly('+20MINUTES'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-01-01T09:50:00Z'
+        , ret)
+  t.end()
+})
+
+// calculate
 test('test calculate with now', function(t) {
 
-  ret = cmds.calculate({  from:'NOW-1HOUR'
-                        , until:'NOW'}
-                      , ''
-                      , '')
+  ret = cmds.calculate('NOW-1HOUR'
+                    , 'from'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
 
-  t.ok(ret)
-  t.ok(ret.from)
-  t.ok(ret.until)
-
-  t.equal('NOW-1HOUR', ret.from)
-  t.equal('NOW', ret.until)
+  t.equal('NOW-1HOUR', ret)
   t.end()
 })
 
+test('test calculate from with date only', function(t) {
 
+  ret = cmds.calculate('3/14/12'
+                    , 'from'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-03-14T07:00:00Z'
+        , ret)
+  t.end()
+})
+
+test('test calculate until with date only', function(t) {
+
+  ret = cmds.calculate('3/14/12'
+                    , 'until'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-03-15T06:59:59Z'
+        , ret)
+  t.end()
+})
+
+test('test calculate until relative to from', function(t) {
+
+  ret = cmds.calculate('FROM+10MINUTES'
+                    , 'until'
+                    , new Date('2012-01-01 9:30:00Z')
+                    , new Date('2012-01-01 10:30:00Z'))
+
+  t.equal('2012-01-01T09:40:00Z'
+        , ret)
+  t.end()
+})
