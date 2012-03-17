@@ -94,6 +94,8 @@ function timeOnly(time, date) {
     tmp[1] = parseInt(tmp[1], 10) + 12
   }
 
+alert(date)
+
   // set
   if (tmp[1]) {
     date.setHours(tmp[1])
