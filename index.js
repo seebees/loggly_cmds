@@ -56,8 +56,7 @@ function calculate(args, currFrom, currUntil) {
       console.log('how?')
       ret.from = relativeOnly(args.from
                             , currFrom
-                            , currUntil
-                            , '+')
+                            , currUntil)
     } else {
       // I don't know what you gave me,
       // but I'm going to let set work it out
@@ -74,8 +73,7 @@ function calculate(args, currFrom, currUntil) {
     } else if (re_relative.test(args.until)) {
       ret.until = relativeOnly(args.until
                             , currFrom
-                            , currUntil
-                            , '-')
+                            , currUntil)
     } else {
       // I don't know what you gave me,
       // but I'm going to let set work it out
@@ -113,10 +111,9 @@ function timeOnly(time, dateString) {
 // given a relative string, return a date
 // e.g +12MINUTES | FROM-1DAY
 // There are many arbitrary things happening here
-function relativeOnly(str, currFrom, currUntil, op) {
+function relativeOnly(str, currFrom, currUntil) {
   // relative time
 
-  op = op || '+'
   var tmp = str.match(re_relative)
 
   tmp[1] = tmp[1] ? tmp[1].toUpperCase()
@@ -126,7 +123,7 @@ function relativeOnly(str, currFrom, currUntil, op) {
                   // from, then + would default to FROM+ and
                   // - to UNTIL- becuase make the range smaller.
                   // Clearly updateing an until value is the oposit
-                  : tmp[2] === op ? 'FROM' : 'UNTIL'
+                  : tmp[2] === '+' ? 'FROM' : 'UNTIL'
 
   var date = tmp[1] === 'UNTIL' ? new Date(currUntil)
                                 : new Date(currFrom)
