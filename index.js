@@ -15,8 +15,8 @@ if ( typeof loggly === 'object'
                   , function work(args) {
                       var value     = args[0]
                         , type      = args[1]
-                        , currFrom  = context.from
-                        , currUntil = context.until
+                        , currFrom  = new Date(_LU.datestring_to_z(context.from))
+                        , currUntil = new Date(_LU.datestring_to_z(context.until))
 
                       if (value) {
                         loggly
