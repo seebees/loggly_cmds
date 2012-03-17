@@ -13,7 +13,7 @@ if ( typeof loggly === 'object'
             // do the work
             $.each( parseArgs(args)
                   , function work(i, args) {
-                           alert(_LU.datestring_to_z(context.from))
+                           alert(loggly.util.datestring_to_z(context.from))
                       var value     = args[0]
                         , type      = args[1]
                         , currFrom  = new Date(_LU.datestring_to_z(context.from))
