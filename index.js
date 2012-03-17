@@ -48,7 +48,10 @@ if ( typeof loggly === 'object'
     time = time.replace('T', ' ')
 
     if (_LU._is_valid_time(time, _LU.re_iso8601z)) {
+      alert(time)
       return new Date(time)
+    } else {
+      alert('bad:'  + time)
     }
   }
 }
@@ -93,8 +96,6 @@ function timeOnly(time, date) {
   if (tmp[1] < 13 && tmp[3] === 'PM') {
     tmp[1] = parseInt(tmp[1], 10) + 12
   }
-
-alert(date)
 
   // set
   if (tmp[1]) {
